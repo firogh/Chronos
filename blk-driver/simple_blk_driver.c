@@ -65,6 +65,7 @@ static int __init simple_blk_drv_init(void)
 	simple_blk->queue = simple_blk_queue;  
 	set_capacity(simple_blk, SIMPLE_BLK_TOTAL_BYTES >> 9);
 	add_disk(simple_blk);
+	return 0;
 	printk(KERN_DEBUG " firo driver end \n");
 err_queue:
 	del_gendisk(simple_blk);
