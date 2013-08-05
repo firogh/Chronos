@@ -30,6 +30,7 @@ static ssize_t sim_ps_read_tasklist(struct file *file, char __user *buf, size_t 
 }
 
 struct file_operations proc_fops = {
+	.owner = THIS_MODULE,
 	.read = sim_ps_read_tasklist, 
 };
 
@@ -38,8 +39,7 @@ static int __init sim_ps_init(void)
 {
 	struct proc_dir_entry *entry;
 	entry = proc_create("sim_ps", 0444, NULL, &proc_fops);
-	if (entry == 0)
-	{
+	if (entry == 0){
 		printk(KERN_ERR "create pro entry failed!\n");
 		return -1;
 	}
