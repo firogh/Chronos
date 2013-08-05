@@ -1,1 +1,0 @@
-cmd_/home/firo/Chronos/process/sim_ps.ko := ld -r -m elf_x86_64 -T /usr/src/kernels/3.10.3-300.fc19.x86_64/scripts/module-common.lds --build-id  -o /home/firo/Chronos/process/sim_ps.ko /home/firo/Chronos/process/sim_ps.o /home/firo/Chronos/process/sim_ps.mod.o
