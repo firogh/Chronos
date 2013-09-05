@@ -1,0 +1,94 @@
+#include <linux/module.h>
+#include <linux/proc_fs.h>
+#include <net/net_namespace.h>
+#include <linux/stat.h>
+#include <linux/seq_file.h>
+#define HWF_PRIVATE_IPADDR_SIZE 250
+#define HWF_PROC_FILE_LINE_SIZE	20
+#define HWF_PROC_FILE_SIZE	(HWF_PRIVATE_IPADDR_SIZE * HWF_PROC_FILE_LINE_SIZE)
+#define HWF_PRIVATE_IPADDR_PREFFIX "192.168.199.1"
+
+static int hwf_ipaddrs_bw[HWF_PRIVATE_IPADDR_SIZE];
+
+static void *hwf_seq_start(struct seq_file *f, loff_t *pos)
+{
+	return (*pos < HWF_PROC_FILE_SIZE) ? pos : NULL;
+}
+
+static void hwf_seq_stop(struct seq_file *f, void *p)
+{
+	/* Nothing to do. */
+}
+
+static void *hwf_seq_next(struct seq_file *f, void *p, loff_t *pos)
+{
+	(*pos) ++;
+	if (*pos >= HWF_PROC_FILE_LINE_SIZE)
+		return NULL;
+	return pos;
+}
+static int hwf_show_ipaddr_bw(struct seq_file *f, void *p)
+{
+	unsigned int i		= *(loff_t *) p;
+	i /= HWF_PROC_FILE_LINE_SIZE;
+
+	//for(j = 0; j < HWF_PRIVATE_IPADDR_SIZE > 1; j++)
+	//{
+	seq_printf(f, "%s%d %d\n", HWF_PRIVATE_IPADDR_PREFFIX, i, hwf_ipaddrs_bw[i]);
+		//seq_printf(f, "%s%d %d\n", HWF_PRIVATE_IPADDR_PREFFIX, j, hwf_ipaddrs_bw[j]);
+	//}
+	return 0;
+
+}
+
+static struct seq_operations hwf_seq_ops = {
+	.start	= hwf_seq_start,
+	.next	= hwf_seq_next,
+	.stop	= hwf_seq_stop,
+	.show	= hwf_show_ipaddr_bw
+}
+static int hwf_file_open(struct inode *inode, struct file *filp)
+{
+	return seq_open(filp, &hwf_seq_ops);
+}
+static int hwf_file_write(struct file *f, const char __user * data, size_t len, loff_t * offset)
+{
+	int ip_index = 0;
+	int bandwidth = 0;
+	char *p;
+
+	p = strchr(data, ' ');
+	*(p++) = '\0';
+	n = snprintf(p,"%d", band_width);
+	if (band_width < 0 || band_width > 4096)
+		return EINVAL;
+	p = strrchr(data,'.');
+	n = snprintf(p, "%d", ip_index);
+
+	//Save current band width to hwf ipaddr bw arry
+	if ( ip_index < 0 || ip_index > 250)
+		return EINVAL;
+	hwf_ipaddrs_bw[ip_index] = band_width; 
+}
+static struct file_operations hwf__file_ops = {
+	.owner	= THIS_MODULE,
+	.read	= seq_read,
+	.write	= hwf_file_write,
+	.llseek	= seq_lseek,
+	.release= seq_release,
+	.open	= hwf_file_open,
+}
+
+int __init hwf_proc_bw_init(void)
+{
+	struct proc_dir_entry *entry;
+
+	entry = proc_create("hiwifi", S_IRUGO | S_IWUGO, init_net->proc_net, &hwf_seq_ops);
+
+	return 0;
+}
+
+void __exit hwf_proc_bw_exit(void)
+{
+	remove_proc_entry("hiwifi", init_net.proc_net);
+}

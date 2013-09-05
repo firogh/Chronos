@@ -1,0 +1,1 @@
+cmd_/home/firo/Chronos/proc_parctice/hwf_proc_bw.ko := ld -r -m elf_x86_64 -T /usr/src/kernels/3.10.10-200.fc19.x86_64/scripts/module-common.lds --build-id  -o /home/firo/Chronos/proc_parctice/hwf_proc_bw.ko /home/firo/Chronos/proc_parctice/hwf_proc_bw.o /home/firo/Chronos/proc_parctice/hwf_proc_bw.mod.o
